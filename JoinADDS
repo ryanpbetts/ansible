@@ -1,0 +1,21 @@
+---
+- name: "Join an existing AD domain"
+  hosts: all
+  vars:
+    domainname: iac.local
+    dnsname: iac.local
+    domain_admin: it@iac.local
+
+  tasks:
+    - name: Join Domain "{{ domainname}}"
+      win_domain_membership:
+        dns_domain_name: "{{ dnsname }}"
+        domain_admin_user: it@iac.local
+        domain_admin_password: G00dF3ll0wes
+        state: domain
+      register: domain_state
+
+    - name: Rebooting to join the domain
+      win_reboot:
+        msg: "Rebooting..."
+      when: domain_state.reboot_required
